@@ -1,0 +1,32 @@
+drop table if exists music;
+create temporary table music as
+select songs.song, talas.tala, ragas.raga, composers.composer, artists.name, artists.type
+from tracks
+  inner join songs on songs.id = tracks.song_id
+  inner join talas on songs.tala_id = talas.id
+  inner join albums on albums.id = tracks.album_id
+  inner join artist_album on artist_album.album_id = albums.id
+  inner join artists on artists.id = artist_album.artist_id
+  inner join composers on songs.composer_id = composers.id
+  inner join ragas on ragas.id = songs.raga_id;
+
+drop table if exists music_data;
+create temporary table music_data as
+select distinct songs.id as song_id, talas.id as tala_id, ragas.id as raga_id,
+    composers.id as composer_id,
+    albums.id as album_id,
+    tracks.id as track_id,
+    track_num as track_num,
+    artists.id as artist_id,
+    artists.type as artist_type
+from tracks
+  inner join songs on songs.id = tracks.song_id
+  inner join talas on songs.tala_id = talas.id
+  inner join albums on albums.id = tracks.album_id
+  inner join artist_album on artist_album.album_id = albums.id
+  inner join artists on artists.id = artist_album.artist_id
+  inner join composers on songs.composer_id = composers.id
+  inner join ragas on ragas.id = songs.raga_id;
+
+select distinct album_id, song_id, tala_id, raga_id, composer_id,
+    track_num from music_data order by album_id, track_num limit 20;
